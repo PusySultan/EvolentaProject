@@ -1,5 +1,6 @@
 package org.example.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -27,4 +28,7 @@ public class Weather
     private  double humidity; // влажность
     private double sea_level; // уровень моря
     private double ground_level; // Уровень земли?
+
+    private double latitude;  // Широта
+    private double longitude; // Долгота
 }

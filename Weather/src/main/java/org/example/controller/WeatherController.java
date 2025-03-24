@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import jakarta.transaction.Transactional;
 import org.example.model.Weather;
 import org.example.repository.WeatherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +29,36 @@ public class WeatherController
         return weatherRepository.findById(id);
     }
 
-    @PostMapping
-    public ResponseEntity<Weather> save(@RequestBody Weather weather)
+    @GetMapping("/coordinate")
+    public ResponseEntity<Weather> getWeatherByCoordinates(
+            @RequestParam double lat,
+            @RequestParam double lon
+    )
     {
-        return weatherRepository.findById(weather.getId()).isPresent()
-                ? new ResponseEntity(weatherRepository.findById(weather.getId()), HttpStatus.BAD_REQUEST)
-                : new ResponseEntity<>(weatherRepository.save(weather), HttpStatus.CREATED);
+        Weather weather = null;
+
+        for(Weather weather_: weatherRepository.findAll())
+        {
+            if(weather_.getLatitude() == lat && weather_.getLongitude() == lon)
+            {
+                weather = weather_;
+            }
+        }
+
+        return weather != null ? new ResponseEntity<>(weather, HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+
+    @PostMapping
+    @Transactional
+    public Weather save(@RequestBody Weather weather)
+    {
+       return weatherRepository.save(weather);
+    }
+
+    @DeleteMapping()
+    public void deleteAll()
+    {
+        weatherRepository.deleteAll();
     }
 }
