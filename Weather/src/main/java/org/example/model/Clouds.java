@@ -1,5 +1,6 @@
 package org.example.model;
 
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,10 +10,8 @@ import jakarta.persistence.Embeddable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class Weather
+public class Clouds
 {
-    private int id;
-    private String main;
-    private String description;
-    private String icon;
+    @Column(name = "allData")
+    private int all;
 }

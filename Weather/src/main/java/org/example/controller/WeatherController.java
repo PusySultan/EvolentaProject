@@ -1,64 +1,65 @@
 package org.example.controller;
 
-import jakarta.transaction.Transactional;
-import org.example.model.Weather;
-import org.example.repository.WeatherRepository;
+import org.example.model.Root;
+import org.example.repository.Repository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Optional;
+import java.time.LocalDateTime;
+
+// port 8081
 
 @RestController
-@RequestMapping("/weather")
+@RequestMapping
 public class WeatherController
 {
     @Autowired
-    private WeatherRepository weatherRepository;
+    private RestTemplate restTemplate;
 
-    @GetMapping
-    public Iterable<Weather> findAll()
+    @Autowired
+    private Repository repository;
+
+    @Value("${appid}")
+    private String appId;
+
+    private LocalDateTime alloReqestTime = LocalDateTime.now();
+
+    @GetMapping("/weather")
+    public Root getWeather(@RequestParam double lat, @RequestParam double lon)
     {
-        return weatherRepository.findAll();
-    }
-
-    @GetMapping("/{id}")
-    public Optional<Weather> findById(@PathVariable int id)
-    {
-        return weatherRepository.findById(id);
-    }
-
-    @GetMapping("/coordinate")
-    public ResponseEntity<Weather> getWeatherByCoordinates(
-            @RequestParam double lat,
-            @RequestParam double lon
-    )
-    {
-        Weather weather = null;
-
-        for(Weather weather_: weatherRepository.findAll())
+        if(LocalDateTime.now().isBefore(alloReqestTime))
         {
-            if(weather_.getLatitude() == lat && weather_.getLongitude() == lon)
-            {
-                weather = weather_;
-            }
+            return repository.findAll().iterator().next();
         }
 
-        return weather != null ? new ResponseEntity<>(weather, HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
+       try
+       {
+           String url =  UriComponentsBuilder
+                   .fromHttpUrl("https://api.openweathermap.org/data/2.5/weather")
+                   .queryParam("lat", lat) // 54.1838 - Saransk
+                   .queryParam("lon", lon) // 45.1749 - Saransk
+                   .queryParam("units", "metric")
+                   .queryParam("appid", appId)
+                   .encode()
+                   .toUriString();
 
+           Root answer = restTemplate.getForObject(url, Root.class);
+           alloReqestTime = LocalDateTime.now().plusMinutes(1);
 
-    @PostMapping
-    @Transactional
-    public Weather save(@RequestBody Weather weather)
-    {
-       return weatherRepository.save(weather);
-    }
+           assert answer != null;
+           repository.save(answer);
 
-    @DeleteMapping()
-    public void deleteAll()
-    {
-        weatherRepository.deleteAll();
+           return answer;
+       }
+       catch (Exception exception)
+       {
+           return new Root(exception.getMessage());
+       }
     }
 }

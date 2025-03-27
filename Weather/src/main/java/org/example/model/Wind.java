@@ -9,10 +9,9 @@ import jakarta.persistence.Embeddable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class Weather
+public class Wind
 {
-    private int id;
-    private String main;
-    private String description;
-    private String icon;
+    private double speed;
+    private int deg;
+    private double gust;
 }
