@@ -1,38 +1,34 @@
 package org.example.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import org.json.JSONObject;
 
-@Entity // - Отображение в БД
-@NoArgsConstructor // - Автоматическое создание конструктора по умолчанию
-@AllArgsConstructor // - Конструктор со всеми параметрами
-@Data // - Автоматическая генерация геттеров, сеттеров, equals и hashCode
+@NoArgsConstructor // Конструктор без параметров
+@AllArgsConstructor // Конструктор со всеми параметрами
+@Data // Генерируем get set
 public class Weather
 {
-    @Id
-    @GeneratedValue
-    private int id;
+    private double temp;
+    private double feels_like;
+    private double temp_min;
+    private double temp_max;
+    private int pressure;
+    private int humidity;
+    private int sea_level;
+    private int grnd_level;
 
-    @NonNull
-    private double temp; // Температура
-    private double feels_like; // Чувствуется как
-    private double temp_min; // Минимальная температура
-    private double temp_max; // Максимальная температура
-    private double pressure; // Давление
-    private  double humidity; // влажность
-    private double sea_level; // уровень моря
-    private double ground_level; // Уровень земли?
-
-    private double latitude;  // Широта
-    private double longitude; // Долгота
-
-    public Weather(double temp)
+    public Weather(JSONObject jsonObject)
     {
-        this.temp = temp;
+        this.temp = jsonObject.getDouble("temp");
+        this.feels_like = jsonObject.getDouble("feels_like");
+        this.temp_min = jsonObject.getDouble("temp_min");
+        this.temp_max = jsonObject.getDouble("temp_max");
+        this.pressure = jsonObject.getInt("pressure");
+        this.humidity = jsonObject.getInt("humidity");
+        this.sea_level = jsonObject.getInt("sea_level");
+        this.grnd_level = jsonObject.getInt("grnd_level");
     }
 }

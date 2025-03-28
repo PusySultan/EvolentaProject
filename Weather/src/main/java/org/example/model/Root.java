@@ -5,16 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
-// import com.fasterxml.jackson.databind.ObjectMapper; // version 2.11.1
-// import com.fasterxml.jackson.annotation.JsonProperty; // version 2.11.1
-/* ObjectMapper om = new ObjectMapper();
-Root root = om.readValue(myJsonString, Root.class); */
 
-@Entity
-@Table(name = "root")
+@Entity // Помечаем класс как сущность JPA
+@Table(name = "root") //Задаем имя таблицы
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
