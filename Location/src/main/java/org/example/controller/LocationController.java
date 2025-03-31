@@ -12,6 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Optional;
 
+// Port 8083
 @RestController()
 @RequestMapping("/location")
 public class LocationController
@@ -43,7 +44,7 @@ public class LocationController
             Geodata geodata = repository.findByName(name).get();
 
             String url =  UriComponentsBuilder
-                    .fromHttpUrl("http://localhost:8081/weather")
+                    .fromHttpUrl("http://weather-info-service/weather")
                     .queryParam("lat", geodata.getLatitude()) // 54.1838 - Saransk
                     .queryParam("lon", geodata.getLongitude()) // 45.1749 - Saransk
                     .toUriString();

@@ -9,9 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Optional;
 
+// Port 8080
 @RestController
 @RequestMapping("/person")
 public class PersonController
@@ -19,7 +21,9 @@ public class PersonController
 
     @Autowired
     private PersonRepository repository;
-    private RestTemplate restTemplate = new RestTemplate();
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @GetMapping
     public Iterable<Person> findAll()
@@ -39,7 +43,13 @@ public class PersonController
         if (repository.existsById(id))
         {
             String location = repository.findById(id).get().getLocation();
-            Weather weather = restTemplate.getForObject("http://localhost:8082/location/weather?name=" + location, Weather.class);
+
+            String url =  UriComponentsBuilder
+                    .fromHttpUrl("http://location-info-service/location/weather") // location-info-service
+                    .queryParam("name", location)
+                    .toUriString();
+
+            Weather weather = restTemplate.getForObject(url, Weather.class);
             return new ResponseEntity<>(weather, HttpStatus.OK);
         }
 

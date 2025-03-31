@@ -3,6 +3,7 @@ package org.example.controller;
 import org.example.model.Root;
 import org.example.repository.Repository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +21,12 @@ import java.time.LocalDateTime;
 public class WeatherController
 {
     @Autowired
+    @Qualifier("RestTemplate")
     private RestTemplate restTemplate;
+
+    @Autowired
+    @Qualifier("RestTemplateExternal")
+    private RestTemplate restTemplateExternal;
 
     @Autowired
     private Repository repository;
@@ -49,7 +55,7 @@ public class WeatherController
                    .encode()
                    .toUriString();
 
-           Root answer = restTemplate.getForObject(url, Root.class);
+           Root answer = restTemplateExternal.getForObject(url, Root.class);
            alloReqestTime = LocalDateTime.now().plusMinutes(1);
 
            assert answer != null;
