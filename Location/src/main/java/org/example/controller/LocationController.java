@@ -6,6 +6,7 @@ import org.example.model.Weather;
 import org.example.repository.GeodataRepository;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -19,8 +20,13 @@ public class LocationController
 {
     @Autowired
     private GeodataRepository repository;
+
     @Autowired
     private RestTemplate restTemplate;
+
+    @Value("${weather.url}")
+    String weatherUrl;
+
 
     // GET /location?name={name} - Получить Location по name
     @GetMapping(params = "name")
@@ -44,7 +50,7 @@ public class LocationController
             Geodata geodata = repository.findByName(name).get();
 
             String url =  UriComponentsBuilder
-                    .fromHttpUrl("http://weather-info-service/weather")
+                    .fromHttpUrl(String.format("http://%s/weather", weatherUrl))
                     .queryParam("lat", geodata.getLatitude()) // 54.1838 - Saransk
                     .queryParam("lon", geodata.getLongitude()) // 45.1749 - Saransk
                     .toUriString();

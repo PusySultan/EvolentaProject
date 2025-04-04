@@ -5,6 +5,7 @@ import org.example.model.Person;
 import org.example.model.Weather;
 import org.example.repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,11 @@ public class PersonController
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Value("${location.url}")
+    private String locationUrl;
+
+
 
     @GetMapping
     public Iterable<Person> findAll()
@@ -45,7 +51,7 @@ public class PersonController
             String location = repository.findById(id).get().getLocation();
 
             String url =  UriComponentsBuilder
-                    .fromHttpUrl("http://location-info-service/location/weather") // location-info-service
+                    .fromHttpUrl( String.format("http://%s/location/weather", locationUrl))
                     .queryParam("name", location)
                     .toUriString();
 
